@@ -2,13 +2,13 @@
 
 SFML=`pwd`
 
-if [ -z "NDK_ROOT"]
+if [ -z "NDK_ROOT" ]
 then 
 	echo "You must set NDK_ROOT, something like /home/user/Android/Sdk/android-ndk-r15c"
 	exit 1
 fi
 
-declare -a arr=("armeabi" "armeabi-v7a")
+declare -a arr=( "armeabi-v7a")
 
 for i in "${arr[@]}"
 do 
@@ -22,7 +22,9 @@ do
 	-DFREETYPE_LIBRARY=$SFML/extlibs/libs-android/$i/libfreetype.a \
 	-DANDROID_NATIVE_API_LEVEL=15 \
 	-DANDROID_ABI=$i \
-	-DCMAKE_TOOLCHAIN_FILE=$SFML/cmake/toolchains/android.toolchain.cmake \
+	-DCMAKE_SYSTEM_NAME=Android \
+	-DCMAKE_ANDROID_NDK=$NDK_ROOT \
+	-DCMAKE_ANDROID_ARCH_ABI=$i \
 	-DANDROID_NDK=$NDK_ROOT \
 	-DVORBISENC_LIBRARY=$SFML/extlibs/libs-android/$i/libvorbisenc.a \
 	-DVORBISFILE_LIBRARY=$SFML/extlibs/libs-android/$i/libvorbisfile.a \
