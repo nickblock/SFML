@@ -1,23 +1,45 @@
 #!/bin/bash
 
-cmake \
--DCMAKE_CXX_FLAGS="-std=c++11 -I$SFML/extlibs/headers/freetype2 -I$SFML/extlibs/headers" \
--DOPENAL_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libopenal.so \
--DOPENAL_INCLUDE_DIR=$SFML/extlibs/headers/AL \
--DFREETYPE_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libfreetype.a \
--DANDROID_NATIVE_API_LEVEL=15 \
--DANDROID_ABI=armeabi-v7a \
--DCMAKE_TOOLCHAIN_FILE=$SFML/cmake/toolchains/android.toolchain.cmake \
--DANDROID_NDK=$NDK_ROOT \
--DVORBISENC_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libvorbisenc.a \
--DVORBISFILE_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libvorbisfile.a \
--DVORBIS_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libvorbis.a \
--DOGG_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libogg.a \
--DVORBIS_INCLUDE_DIR=$SFML/extlibs/headers/vorbis \
--DOGG_INCLUDE_DIR=$SFML/extlibs/headers/ogg \
--DFLAC_INCLUDE_DIR=$SFML/extlibs/headers/flac \
--DFLAC_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libFLAC.a \
--DCMAKE_FIND_FRAMEWORK=NEVER \
--DANDROID_STL=stlport_shared \
-$SFML
+SFML=`pwd`
+
+if [ -z "NDK_ROOT"]
+then 
+	echo "You must set NDK_ROOT, something like /home/user/Android/Sdk/android-ndk-r15c"
+	exit 1
+fi
+
+declare -a arr=("armeabi" "armeabi-v7a")
+
+for i in "${arr[@]}"
+do 
+	mkdir -p build/"$i"
+	cd build/"$i"
+	
+	cmake \
+	-DCMAKE_CXX_FLAGS="-std=c++11 -I$SFML/extlibs/headers/freetype2 -I$SFML/extlibs/headers" \
+	-DOPENAL_LIBRARY=$SFML/extlibs/libs-android/$i/libopenal.so \
+	-DOPENAL_INCLUDE_DIR=$SFML/extlibs/headers/AL \
+	-DFREETYPE_LIBRARY=$SFML/extlibs/libs-android/$i/libfreetype.a \
+	-DANDROID_NATIVE_API_LEVEL=15 \
+	-DANDROID_ABI=$i \
+	-DCMAKE_TOOLCHAIN_FILE=$SFML/cmake/toolchains/android.toolchain.cmake \
+	-DANDROID_NDK=$NDK_ROOT \
+	-DVORBISENC_LIBRARY=$SFML/extlibs/libs-android/$i/libvorbisenc.a \
+	-DVORBISFILE_LIBRARY=$SFML/extlibs/libs-android/$i/libvorbisfile.a \
+	-DVORBIS_LIBRARY=$SFML/extlibs/libs-android/$i/libvorbis.a \
+	-DOGG_LIBRARY=$SFML/extlibs/libs-android/$i/libogg.a \
+	-DVORBIS_INCLUDE_DIR=$SFML/extlibs/headers/vorbis \
+	-DOGG_INCLUDE_DIR=$SFML/extlibs/headers/ogg \
+	-DFLAC_INCLUDE_DIR=$SFML/extlibs/headers/flac \
+	-DFLAC_LIBRARY=$SFML/extlibs/libs-android/$i/libFLAC.a \
+	-DCMAKE_FIND_FRAMEWORK=NEVER \
+	-DANDROID_STL=stlport_shared \
+	$SFML
+
+	make -j`nproc`
+	cd -
+done
+
+
+
 
