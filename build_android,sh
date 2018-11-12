@@ -1,0 +1,23 @@
+#!/bin/bash
+
+cmake \
+-DCMAKE_CXX_FLAGS="-std=c++11 -I$SFML/extlibs/headers/freetype2" \
+-DOPENAL_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libopenal.so \
+-DOPENAL_INCLUDE_DIR=$SFML/extlibs/headers/AL \
+-DFREETYPE_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libfreetype.a \
+-DANDROID_NATIVE_API_LEVEL=15 \
+-DANDROID_ABI=armeabi-v7a \
+-DCMAKE_TOOLCHAIN_FILE=$SFML/cmake/toolchains/android.toolchain.cmake \
+-DANDROID_NDK=$NDK_ROOT \
+-DVORBISENC_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libvorbisenc.a \
+-DVORBISFILE_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libvorbisfile.a \
+-DVORBIS_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libvorbis.a \
+-DOGG_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libogg.a \
+-DVORBIS_INCLUDE_DIR=$SFML/extlibs/headers/vorbis \
+-DOGG_INCLUDE_DIR=$SFML/extlibs/headers/ogg \
+-DFLAC_INCLUDE_DIR=$SFML/extlibs/headers/flac \
+-DFLAC_LIBRARY=$SFML/extlibs/libs-android/armeabi-v7a/libFLAC.a \
+-DCMAKE_FIND_FRAMEWORK=NEVER \
+-DANDROID_STL=stlport_shared \
+$SFML
+
