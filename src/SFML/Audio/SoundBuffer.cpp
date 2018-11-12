@@ -130,7 +130,7 @@ bool SoundBuffer::loadFromSamples(const Int16* samples, Uint64 sampleCount, unsi
         // Error...
         err() << "Failed to load sound buffer from samples ("
               << "array: "      << samples      << ", "
-              << "count: "      << sampleCount  << ", "
+              << "count: "      << (int)sampleCount  << ", "
               << "channels: "   << channelCount << ", "
               << "samplerate: " << sampleRate   << ")"
               << std::endl;
