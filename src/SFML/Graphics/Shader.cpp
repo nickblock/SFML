@@ -31,6 +31,7 @@
 #include <SFML/Graphics/Transform.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/GLCheck.hpp>
+#include <SFML/Graphics/GLExtensions.hpp>
 #include <SFML/Window/Context.hpp>
 #include <SFML/System/InputStream.hpp>
 #include <SFML/System/Mutex.hpp>
@@ -40,7 +41,10 @@
 #include <vector>
 
 
-#ifndef SFML_OPENGL_ES
+#ifdef SFML_SYSTEM_ANDROID
+#include <SFML/System/Android/ResourceStream.hpp>
+#endif
+#ifndef SFML_OPENGL_ES__
 
 #if defined(SFML_SYSTEM_MACOS) || defined(SFML_SYSTEM_IOS)
 
@@ -62,8 +66,12 @@ namespace
     GLint checkMaxTextureUnits()
     {
         GLint maxUnits = 0;
-        glCheck(glGetIntegerv(GLEXT_GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxUnits));
 
+#ifndef SFML_OPENGL_ES
+        glCheck(glGetIntegerv(GLEXT_GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxUnits));
+#else
+        maxUnits = 7;
+#endif
         return maxUnits;
     }
 
@@ -190,10 +198,18 @@ struct Shader::UniformBinder : private NonCopyable
     {
         if (currentProgram)
         {
-            // Enable program object
-            glCheck(savedProgram = GLEXT_glGetHandle(GLEXT_GL_PROGRAM_OBJECT));
+
+#ifdef SFML_SYSTEM_ANDROID
+
+            glGetIntegerv(GL_CURRENT_PROGRAM,&savedProgram);            
+            if (currentProgram != savedProgram)
+                glCheck(glUseProgram(currentProgram));
+#else
+      // Enable program object
+            glCheck(savedProgram = GLEXT_glGetHandle(GL_PROGRAM_OBJECT));
             if (currentProgram != savedProgram)
                 glCheck(GLEXT_glUseProgramObject(currentProgram));
+#endif
 
             // Store uniform location for further use outside constructor
             location = shader.getUniformLocation(name);
@@ -212,9 +228,17 @@ struct Shader::UniformBinder : private NonCopyable
     }
 
     TransientContextLock lock;           ///< Lock to keep context active while uniform is bound
+
+#ifndef SFML_OPENGL_ES
+
     GLEXT_GLhandle       savedProgram;   ///< Handle to the previously active program object
     GLEXT_GLhandle       currentProgram; ///< Handle to the program object of the modified sf::Shader instance
+ #else
+    GLint               savedProgram;
+    GLint               currentProgram;
+#endif
     GLint                location;       ///< Uniform location, used by the surrounding sf::Shader code
+
 };
 
 
@@ -242,14 +266,27 @@ Shader::~Shader()
 ////////////////////////////////////////////////////////////
 bool Shader::loadFromFile(const std::string& filename, Type type)
 {
-    // Read the file
+
     std::vector<char> shader;
+#ifdef SFML_SYSTEM_ANDROID
+    priv::ResourceStream res(filename);
+
+    Int64 size = res.getSize();
+    if(size == 0) {
+        return false;
+    }
+    shader.resize(size);
+    if(res.read(shader.data(), size) == -1) {
+        return false;
+    }
+#else
+    // Read the file
     if (!getFileContents(filename, shader))
     {
         err() << "Failed to open shader file \"" << filename << "\"" << std::endl;
         return false;
     }
-
+#endif
     // Compile the shader program
     if (type == Vertex)
         return compile(&shader[0], NULL, NULL);
@@ -787,11 +824,16 @@ bool Shader::isAvailable()
         // Make sure that extensions are initialized
         sf::priv::ensureExtensionsInit();
 
+#ifndef SFML_SYSTEM_ANDROID
         available = GLEXT_multitexture         &&
+
                     GLEXT_shading_language_100 &&
                     GLEXT_shader_objects       &&
                     GLEXT_vertex_shader        &&
                     GLEXT_fragment_shader;
+#else
+        available = true;
+#endif
     }
 
     return available;
@@ -815,7 +857,11 @@ bool Shader::isGeometryAvailable()
         // Make sure that extensions are initialized
         sf::priv::ensureExtensionsInit();
 
+#ifdef SFML_SYSTEM_ANDROID
+        available = false;
+#else
         available = isAvailable() && GLEXT_geometry_shader4;
+#endif
     }
 
     return available;
@@ -890,6 +936,8 @@ bool Shader::compile(const char* vertexShaderCode, const char* geometryShaderCod
     // Create the geometry shader if needed
     if (geometryShaderCode)
     {
+#ifndef SFML_SYSTEM_ANDROID
+
         // Create and compile the shader
         GLEXT_GLhandle geometryShader = GLEXT_glCreateShaderObject(GLEXT_GL_GEOMETRY_SHADER);
         glCheck(GLEXT_glShaderSource(geometryShader, 1, &geometryShaderCode, NULL));
@@ -912,6 +960,7 @@ bool Shader::compile(const char* vertexShaderCode, const char* geometryShaderCod
         // Attach the shader to the program, and delete it (not needed anymore)
         glCheck(GLEXT_glAttachObject(shaderProgram, geometryShader));
         glCheck(GLEXT_glDeleteObject(geometryShader));
+#endif
     }
 
     // Create the fragment shader if needed

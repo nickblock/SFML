@@ -30,6 +30,12 @@
 #include <string>
 
 
+
+#ifdef SFML_SYSTEM_ANDROID
+#define GLEXT_GL_INVALID_FRAMEBUFFER_OPERATION GL_INVALID_FRAMEBUFFER_OPERATION
+#endif
+
+
 namespace sf
 {
 namespace priv
@@ -70,6 +76,7 @@ void glCheckError(const char* file, unsigned int line, const char* expression)
                 break;
             }
 
+#ifndef SFML_SYSTEM_ANDROID
             case GL_STACK_OVERFLOW:
             {
                 error = "GL_STACK_OVERFLOW";
@@ -83,7 +90,7 @@ void glCheckError(const char* file, unsigned int line, const char* expression)
                 description = "This command would cause a stack underflow.";
                 break;
             }
-
+#endif
             case GL_OUT_OF_MEMORY:
             {
                 error = "GL_OUT_OF_MEMORY";
@@ -97,6 +104,7 @@ void glCheckError(const char* file, unsigned int line, const char* expression)
                 description = "The object bound to FRAMEBUFFER_BINDING is not \"framebuffer complete\".";
                 break;
             }
+
         }
 
         // Log the error
