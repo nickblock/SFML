@@ -76,7 +76,7 @@
     #define GLEXT_blend_subtract                      GL_OES_blend_subtract
     #define GLEXT_glBlendEquation                     glBlendEquationOES
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_OPENGL_ES2
     #define GLEXT_GL_FUNC_ADD                         GL_FUNC_ADD
     #define GLEXT_GL_FUNC_SUBTRACT                    GL_FUNC_SUBTRACT
     #define GLEXT_GL_FUNC_REVERSE_SUBTRACT            GL_FUNC_REVERSE_SUBTRACT
@@ -114,7 +114,7 @@
     #define GLEXT_glDeleteRenderbuffers               glDeleteRenderbuffersOES
     #define GLEXT_glGenRenderbuffers                  glGenRenderbuffersOES
     #define GLEXT_glRenderbufferStorage               glRenderbufferStorageOES
-#ifndef SFML_SYSTEM_ANDROID
+#ifndef SFML_OPENGL_ES2
     #define GLEXT_glBindFramebuffer                   glBindFramebufferOES
 #else 
     #define GLEXT_glBindFramebuffer                   glBindFramebuffer 
@@ -125,7 +125,7 @@
     #define GLEXT_glFramebufferTexture2D              glFramebufferTexture2DOES
     #define GLEXT_glFramebufferRenderbuffer           glFramebufferRenderbufferOES
     #define GLEXT_glGenerateMipmap                    glGenerateMipmapOES
-#ifndef SFML_SYSTEM_ANDROID
+#ifndef SFML_OPENGL_ES2
     #define GLEXT_GL_FRAMEBUFFER                      GL_FRAMEBUFFER_OES
     #define GLEXT_GL_INVALID_FRAMEBUFFER_OPERATION    GL_INVALID_FRAMEBUFFER_OPERATION_OES
     #define GLEXT_GL_FRAMEBUFFER_BINDING              GL_FRAMEBUFFER_BINDING_OES
@@ -161,7 +161,7 @@
         #define GLEXT_GL_SRGB8_ALPHA8                     0
     #endif
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_OPENGL_ES2
 
     #define GLEXT_glCreateProgramObject               glCreateProgram
     #define GLEXT_glUseProgramObject                  glUseProgram
@@ -180,7 +180,7 @@
     #define GLEXT_glUniform4fv                        glUniform4fv
     #define GLEXT_glUniformMatrix3fv                  glUniformMatrix3fv
     #define GLEXT_glUniformMatrix4fv                  glUniformMatrix4fv
-    #define GLEXT_glGetObjectParameteriv              glGetProgramiv
+    #define GLEXT_glGetObjectParameteriv              glGetShaderiv
     #define GLEXT_glGetInfoLog                        glGetProgramInfoLog
     #define GLEXT_glGetUniformLocation                glGetUniformLocation
     #define GLEXT_GL_PROGRAM_OBJECT                   GL_PROGRAM
@@ -201,7 +201,7 @@
 #else
 
 
-#ifndef SFML_SYSTEM_ANDROID
+#ifndef SFML_OPENGL_ES2
 
     #include <SFML/Graphics/GLLoader.hpp>
 
@@ -304,7 +304,7 @@
 #endif
 
 
-#ifndef SFML_SYSTEM_ANDROID
+#ifndef SFML_OPENGL_ES2
 
     // Core since 2.0 - ARB_vertex_shader
     #define GLEXT_vertex_shader                       sfogl_ext_ARB_vertex_shader

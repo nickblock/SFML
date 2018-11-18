@@ -67,7 +67,12 @@
 
     #include <GLES/gl.h>
     #include <GLES/glext.h>
+
+#if defined(SFML_OPENGL_ES2)
     #include <GLES2/gl2.h>
+#endif
+
+    #include <GLES2/gl2platform.h>
     #include <GLES2/gl2ext.h>
 #endif
 

@@ -44,7 +44,8 @@
 #ifdef SFML_SYSTEM_ANDROID
 #include <SFML/System/Android/ResourceStream.hpp>
 #endif
-#ifndef SFML_OPENGL_ES__
+
+#if !defined(SFML_OPENGL_ES) || defined(SFML_OPENGL_ES2)
 
 #if defined(SFML_SYSTEM_MACOS) || defined(SFML_SYSTEM_IOS)
 
@@ -67,7 +68,7 @@ namespace
     {
         GLint maxUnits = 0;
 
-#ifndef SFML_OPENGL_ES
+#ifndef SFML_OPENGL_ES2
         glCheck(glGetIntegerv(GLEXT_GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxUnits));
 #else
         maxUnits = 7;
@@ -199,7 +200,7 @@ struct Shader::UniformBinder : private NonCopyable
         if (currentProgram)
         {
 
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_OPENGL_ES2
 
             glGetIntegerv(GL_CURRENT_PROGRAM,&savedProgram);            
             if (currentProgram != savedProgram)
@@ -229,7 +230,7 @@ struct Shader::UniformBinder : private NonCopyable
 
     TransientContextLock lock;           ///< Lock to keep context active while uniform is bound
 
-#ifndef SFML_OPENGL_ES
+#ifndef SFML_OPENGL_ES2
 
     GLEXT_GLhandle       savedProgram;   ///< Handle to the previously active program object
     GLEXT_GLhandle       currentProgram; ///< Handle to the program object of the modified sf::Shader instance
@@ -268,11 +269,11 @@ bool Shader::loadFromFile(const std::string& filename, Type type)
 {
 
     std::vector<char> shader;
-#ifdef SFML_SYSTEM_ANDROID
+#ifdef SFML_OPENGL_ES2
     priv::ResourceStream res(filename);
 
     Int64 size = res.getSize();
-    if(size == 0) {
+    if(size <= 0) {
         return false;
     }
     shader.resize(size);
@@ -978,7 +979,13 @@ bool Shader::compile(const char* vertexShaderCode, const char* geometryShaderCod
         if (success == GL_FALSE)
         {
             char log[1024];
-            glCheck(GLEXT_glGetInfoLog(fragmentShader, sizeof(log), 0, log));
+            GLint length;
+#ifdef SFML_OPENGL_ES2
+            glCheck(glGetShaderInfoLog(fragmentShader, sizeof(log), &length, log));
+#else
+
+            glCheck(GLEXT_glGetInfoLog(fragmentShader, sizeof(log), &length, log));
+#endif
             err() << "Failed to compile fragment shader:" << std::endl
                   << log << std::endl;
             glCheck(GLEXT_glDeleteObject(fragmentShader));

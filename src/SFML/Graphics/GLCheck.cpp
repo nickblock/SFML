@@ -29,13 +29,6 @@
 #include <SFML/System/Err.hpp>
 #include <string>
 
-
-
-#ifdef SFML_SYSTEM_ANDROID
-#define GLEXT_GL_INVALID_FRAMEBUFFER_OPERATION GL_INVALID_FRAMEBUFFER_OPERATION
-#endif
-
-
 namespace sf
 {
 namespace priv
@@ -76,7 +69,7 @@ void glCheckError(const char* file, unsigned int line, const char* expression)
                 break;
             }
 
-#ifndef SFML_SYSTEM_ANDROID
+#ifndef SFML_OPENGL_ES2
             case GL_STACK_OVERFLOW:
             {
                 error = "GL_STACK_OVERFLOW";

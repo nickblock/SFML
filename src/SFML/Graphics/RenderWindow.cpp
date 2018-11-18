@@ -30,14 +30,6 @@
 #include <SFML/Graphics/GLCheck.hpp>
 #include <SFML/Graphics/RenderTextureImplFBO.hpp>
 
-
-
-#ifdef SFML_SYSTEM_ANDROID
-#define GLEXT_GL_FRAMEBUFFER GL_FRAMEBUFFER
-#define GLEXT_glBindFramebuffer glBindFramebuffer
-#define GLEXT_GL_FRAMEBUFFER_BINDING GL_FRAMEBUFFER_BINDING
-#endif
-
 namespace sf
 {
 ////////////////////////////////////////////////////////////

@@ -205,7 +205,7 @@ unsigned int RenderTextureImplFBO::getMaximumAntialiasingLevel()
 ////////////////////////////////////////////////////////////
 void RenderTextureImplFBO::unbind()
 {
-    glCheck(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    glCheck(glBindFramebuffer(GLEXT_GL_FRAMEBUFFER, 0));
 }
 
 
@@ -379,12 +379,12 @@ bool RenderTextureImplFBO::create(unsigned int width, unsigned int height, unsig
     // Save the current binding so we can restore them after we are done
     GLint frameBuffer = 0;
 
-    glCheck(glGetIntegerv(GL_FRAMEBUFFER_BINDING, &frameBuffer));
+    glCheck(glGetIntegerv(GLEXT_GL_FRAMEBUFFER_BINDING, &frameBuffer));
 
     if (createFrameBuffer())
     {
         // Restore previously bound framebuffer
-        glCheck(glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer));
+        glCheck(glBindFramebuffer(GLEXT_GL_FRAMEBUFFER, frameBuffer));
 
         return true;
     }
